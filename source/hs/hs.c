@@ -2807,6 +2807,7 @@ symbols in this file:
 #include "objects/object_lights.h"
 #include "objects/scenery.h"
 #include "physics/breakable_surfaces.h"
+#include "physics/physics.h"
 #include "rasterizer/rasterizer.h"
 #include "render/render.h"
 #include "saved games/game_state.h"
@@ -3375,7 +3376,7 @@ typedef void (*hs_token_enumerator)(
 
 struct hs_function_table_storage
 {
-	struct hs_function_definition const *functions[418];
+	struct hs_function_definition const *functions[NUMBER_OF_HS_FUNCTIONS];
 	struct profile_section profile;
 	hs_token_enumerator token_enumerators[18];
 };
@@ -5250,6 +5251,14 @@ static void xbox_set_machine_name_evaluate(
 	short function_index,
 	long thread_index,
 	boolean initialize);
+
+#ifdef HALO_LINUX
+static void physics_set_gravity_scale_evaluate(
+	short function_index,
+	long thread_index,
+	boolean initialize);
+#endif
+
 static void hs_enumerate_special_form_names(
 	void);
 static void hs_enumerate_script_type_names(
@@ -9654,7 +9663,6 @@ static struct hs_function_definition const map_reset_definition=
 	NULL,
 	0,
 };
-
 static struct hs_function_definition_with_1_parameter const map_name_definition=
 {
 	{
@@ -11573,7 +11581,23 @@ static struct hs_function_definition_with_1_parameter const xbox_set_machine_nam
 	},
 };
 
-long const hs_function_table_count= 418;
+#ifdef HALO_LINUX
+static struct hs_function_definition_with_1_parameter const gravity_scale_definition=
+{
+	{
+		_hs_type_void,
+		0,
+		"gravity_scale",
+		hs_macro_function_parse,
+		physics_set_gravity_scale_evaluate,
+		"changes the gravity scale.",
+		NULL,
+		1,
+		{ _hs_type_real },
+	},
+};
+#endif
+long const hs_function_table_count = NUMBER_OF_HS_FUNCTIONS;
 
 struct hs_enum_definition const hs_enum_table[]=
 {
@@ -12005,6 +12029,9 @@ struct hs_function_table_storage hs_function_table=
 		&display_scenario_help_definition.definition,
 		&hs_network_game_start_now_definition,
 		&xbox_set_machine_name_definition.definition,
+#ifdef HALO_LINUX
+		&gravity_scale_definition.definition
+#endif
 	},
 	{
 		"hs_update",
@@ -13795,6 +13822,11 @@ HS_EVALUATE_VOID_STRING(profile_sections_activate_evaluate, profile_sections_act
 HS_EVALUATE_VOID_STRING(profile_sections_deactivate_evaluate, profile_sections_deactivate)
 HS_EVALUATE_VOID_STRING(profile_graph_toggle_evaluate, profile_graph_toggle)
 HS_EVALUATE_VOID_BOOLEAN(debug_pvs_evaluate, debug_pvs)
+
+#ifdef HALO_LINUX
+HS_EVALUATE_VOID_FROM_ARGUMENTS(physics_set_gravity_scale_evaluate, struct hs_arguments_real, (physics_set_gravity_scale(arguments->value)))
+#endif
+
 static void ai_debug_vocalize_evaluate(
 	short function_index,
 	long thread_index,

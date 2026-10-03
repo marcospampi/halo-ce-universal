@@ -276,7 +276,8 @@ static void rotate_vectors3d_by_angular_velocity(
 
 /* ---------- globals */
 
-real global_gravity = 0.0035651792f;
+#define HALO_GRAVITY 0.0035651792f
+real global_gravity = HALO_GRAVITY;
 real global_water_density = 1.0f;
 real global_air_density = 0.0011f;
 real global_physics_collision_depth = 0.2f;
@@ -2193,5 +2194,10 @@ void physics_update(
 
 	return;
 }
+#ifdef HALO_LINUX
+void physics_set_gravity_scale(real scale) {
+	global_gravity = scale * HALO_GRAVITY;
+}
+#endif
 
 /* ---------- private code */

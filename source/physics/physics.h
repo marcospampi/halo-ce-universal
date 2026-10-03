@@ -70,7 +70,9 @@ void physics_update(
 
 void render_debug_physics(struct physics_instance *instance);
 
-
+#ifdef HALO_LINUX
+void physics_set_gravity_scale(real scale);
+#endif
 /* ---------- globals */
 
 extern real global_gravity;

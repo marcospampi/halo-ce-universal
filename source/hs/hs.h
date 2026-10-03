@@ -66,7 +66,12 @@ enum hs_type
 
 enum
 {
-	NUMBER_OF_HS_OBJECT_TYPES = 6
+	NUMBER_OF_HS_OBJECT_TYPES = 6,
+#ifdef HALO_LINUX
+	NUMBER_OF_HS_FUNCTIONS = 419
+#else
+	NUMBER_OF_HS_FUNCTIONS = 418	
+#endif
 };
 
 enum hs_function_index
